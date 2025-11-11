@@ -226,9 +226,22 @@ export async function incrementProfileVisits(
 
   // If RPC doesn't exist, fallback to manual increment
   if (error) {
+    // Fetch current value
+    const { data: profile, error: fetchError } = await supabase
+      .from('profiles')
+      .select('total_visits')
+      .eq('id', profileId)
+      .single();
+
+    if (fetchError || !profile) {
+      console.error('Error fetching profile for visit increment:', fetchError);
+      return false;
+    }
+
+    // Update with incremented value
     const { error: updateError } = await supabase
       .from('profiles')
-      .update({ total_visits: supabase.raw('total_visits + 1') })
+      .update({ total_visits: (profile.total_visits || 0) + 1 })
       .eq('id', profileId);
 
     if (updateError) {

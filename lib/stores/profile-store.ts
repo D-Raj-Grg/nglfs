@@ -10,6 +10,8 @@ export interface Profile {
   display_name: string | null;
   bio: string | null;
   avatar_url: string | null;
+  message_count?: number;
+  total_visits?: number;
   created_at?: string;
   updated_at?: string;
 }

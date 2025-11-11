@@ -31,7 +31,7 @@ export default function ProfileNotFound() {
                 Profile Not Found
               </h1>
               <p className="text-gray-400">
-                This user doesn't exist or the username was typed incorrectly.
+                This user doesn&apos;t exist or the username was typed incorrectly.
               </p>
             </div>
 
@@ -40,7 +40,7 @@ export default function ProfileNotFound() {
               <p className="text-sm text-gray-300 mb-2">Double check:</p>
               <ul className="text-sm text-gray-400 space-y-1 list-disc list-inside">
                 <li>The username spelling</li>
-                <li>That the profile hasn't been deleted</li>
+                <li>That the profile hasn&apos;t been deleted</li>
                 <li>The URL you entered</li>
               </ul>
             </div>

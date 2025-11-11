@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageForm } from "@/components/profile/message-form";
@@ -97,7 +98,7 @@ export default async function PublicProfilePage({
                 Send an Anonymous Message
               </h2>
               <p className="text-gray-400 text-sm">
-                Say something nice... or not. They'll never know it's you!
+                Say something nice... or not. They&apos;ll never know it&apos;s you!
               </p>
             </div>
 
@@ -109,12 +110,12 @@ export default async function PublicProfilePage({
         <div className="text-center mt-6">
           <p className="text-sm text-gray-500">
             Want your own anonymous messaging link?{" "}
-            <a
+            <Link
               href="/"
               className="text-purple-400 hover:text-purple-300 underline"
             >
               Create your profile
-            </a>
+            </Link>
           </p>
         </div>
       </div>

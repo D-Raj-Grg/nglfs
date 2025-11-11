@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, MessageSquare, Trash2, Eye, EyeOff, Search } from "lucide-react";
+import { Loader2, MessageSquare, Trash2, Eye, Search } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { Button } from "@/components/ui/button";

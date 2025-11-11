@@ -92,7 +92,7 @@ export function AccountDeletion() {
                   </p>
                   <ul className="list-disc list-inside space-y-2 text-sm">
                     <li>Your profile and username</li>
-                    <li>All messages you've received</li>
+                    <li>All messages you&apos;ve received</li>
                     <li>Your analytics and statistics</li>
                     <li>Your avatar and uploaded files</li>
                   </ul>

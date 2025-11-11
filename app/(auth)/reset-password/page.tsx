@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
             Check Your Email
           </AnimatedGradientText>
           <p className="text-muted-foreground">
-            We've sent a password reset link to your email address
+            We&apos;ve sent a password reset link to your email address
           </p>
         </div>
 
@@ -81,7 +81,7 @@ export default function ResetPasswordPage() {
 
             <div className="space-y-2">
               <p className="text-xs text-muted-foreground">
-                Didn't receive the email? Check your spam folder or try again.
+                Didn&apos;t receive the email? Check your spam folder or try again.
               </p>
             </div>
 
@@ -104,7 +104,7 @@ export default function ResetPasswordPage() {
           Reset Password
         </AnimatedGradientText>
         <p className="text-muted-foreground">
-          Enter your email and we'll send you a reset link
+          Enter your email and we&apos;ll send you a reset link
         </p>
       </div>
 
@@ -154,7 +154,7 @@ export default function ResetPasswordPage() {
           {/* Info Text */}
           <div className="text-xs text-muted-foreground text-center pt-2">
             <p>
-              You'll receive an email with instructions on how to reset your password.
+              You&apos;ll receive an email with instructions on how to reset your password.
             </p>
           </div>
         </form>

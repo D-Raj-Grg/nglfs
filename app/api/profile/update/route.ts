@@ -71,7 +71,7 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json(
         {
           error: "Invalid profile data",
-          details: validationResult.error.errors,
+          details: validationResult.error.issues,
         },
         { status: 400 }
       );
