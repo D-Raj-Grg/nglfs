@@ -27,7 +27,7 @@ export async function GET(request: NextRequest) {
     // Get messages for this user
     const { data: messages, error } = await supabase
       .from("messages")
-      .select("id, content, is_read, created_at")
+      .select("id, content, is_read, created_at, sender_ip_hash")
       .eq("recipient_id", user.id)
       .order("created_at", { ascending: false });
 

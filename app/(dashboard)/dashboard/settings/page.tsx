@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { PasswordChangeForm } from "@/components/settings/password-change-form";
 import { AccountDeletion } from "@/components/settings/account-deletion";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
+import { PrivacySettings } from "@/components/settings/privacy-settings";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { validateUsername, sanitizeUsername } from "@/lib/validations/username";
 import { toast } from "sonner";
@@ -274,9 +275,10 @@ export default function ProfileSettingsPage() {
 
       {/* Settings Tabs */}
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-4 mb-6">
+        <TabsList className="grid w-full grid-cols-5 mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsTrigger value="privacy">Privacy</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
         </TabsList>
@@ -388,7 +390,7 @@ export default function ProfileSettingsPage() {
                 (username !== originalUsername &&
                   usernameAvailability.status !== "available")
               }
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              className="flex-1 bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
             >
               {isSubmitting ? (
                 <>
@@ -450,6 +452,13 @@ export default function ProfileSettingsPage() {
         <TabsContent value="appearance">
           <MagicCard className="p-8">
             <ThemeToggle />
+          </MagicCard>
+        </TabsContent>
+
+        {/* Privacy Tab */}
+        <TabsContent value="privacy">
+          <MagicCard className="p-8">
+            <PrivacySettings />
           </MagicCard>
         </TabsContent>
 

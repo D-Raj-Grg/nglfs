@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Loader2, MessageSquare, Eye, TrendingUp, Calendar } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { AnalyticsDashboardSkeleton } from "@/components/skeletons/analytics-skeleton";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth/auth-context";
 
@@ -56,8 +57,14 @@ export default function AnalyticsPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <AnimatedGradientText className="text-3xl font-bold mb-2">
+            Analytics
+          </AnimatedGradientText>
+          <p className="text-gray-400">Loading analytics data...</p>
+        </div>
+        <AnalyticsDashboardSkeleton />
       </div>
     );
   }

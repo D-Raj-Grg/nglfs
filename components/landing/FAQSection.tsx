@@ -43,7 +43,7 @@ const faqs = [
 
 export default function FAQSection() {
   return (
-    <section className="relative bg-gradient-to-b from-[#0A0A0A] to-[#1A1A1A] py-24 md:py-32">
+    <section className="relative bg-linear-to-b from-[#0A0A0A] to-[#1A1A1A] py-24 md:py-32">
       <div className="container mx-auto max-w-4xl px-4">
         <BlurFade delay={0.1}>
           <div className="mb-16 text-center">

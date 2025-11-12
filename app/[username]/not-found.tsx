@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 export default function ProfileNotFound() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-950 via-gray-900 to-black overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-gray-950 via-gray-900 to-black overflow-hidden">
       {/* Animated Background */}
       <Particles
         className="absolute inset-0 z-0"
@@ -21,13 +21,13 @@ export default function ProfileNotFound() {
         <MagicCard className="p-12">
           <div className="text-center space-y-6">
             {/* 404 Icon */}
-            <div className="mx-auto w-24 h-24 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
+            <div className="mx-auto w-24 h-24 bg-linear-to-r from-purple-600 to-pink-600 rounded-full flex items-center justify-center">
               <Search className="w-12 h-12 text-white" />
             </div>
 
             {/* Title */}
             <div>
-              <h1 className="text-4xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
+              <h1 className="text-4xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent mb-2">
                 Profile Not Found
               </h1>
               <p className="text-gray-400">
@@ -48,7 +48,7 @@ export default function ProfileNotFound() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row gap-3">
               <Link href="/" className="flex-1">
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
+                <Button className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700">
                   <Home className="w-4 h-4 mr-2" />
                   Go Home
                 </Button>

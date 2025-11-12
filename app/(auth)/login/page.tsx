@@ -11,6 +11,7 @@ import { Loader2, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { RainbowButton } from "@/components/ui/rainbow-button";
+import { BlurFade } from "@/components/ui/blur-fade";
 import {
   Card,
   CardContent,
@@ -60,12 +61,13 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container max-w-md mx-auto px-4 py-8">
-      <Card className="w-full border-none p-0 shadow-none">
-        <MagicCard
-          gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
-          className="p-0"
-        >
+    <BlurFade delay={0.1} inView>
+      <div className="container max-w-md mx-auto px-4 py-8">
+        <Card className="w-full border-none p-0 shadow-none">
+          <MagicCard
+            gradientColor={theme === "dark" ? "#262626" : "#D9D9D955"}
+            className="p-0"
+          >
           <CardHeader className="border-border border-b p-6 pb-6">
             <CardTitle className="text-center">
               <AnimatedGradientText className="text-3xl font-bold">
@@ -179,6 +181,7 @@ export default function LoginPage() {
           Your connection is secure and encrypted
         </p>
       </div>
-    </div>
+      </div>
+    </BlurFade>
   );
 }

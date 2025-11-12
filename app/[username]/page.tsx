@@ -42,7 +42,7 @@ export default async function PublicProfilePage({
   // TODO: Implement visit tracking with IP hashing
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-950 via-gray-900 to-black overflow-hidden">
+    <div className="relative min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-gray-950 via-gray-900 to-black overflow-hidden">
       {/* Animated Background */}
       <Particles
         className="absolute inset-0 z-0"
@@ -66,7 +66,7 @@ export default async function PublicProfilePage({
                   className="w-full h-full object-cover"
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center">
+                <div className="w-full h-full bg-linear-to-br from-purple-600 to-pink-600 flex items-center justify-center">
                   <User className="w-14 h-14 text-white" />
                 </div>
               )}
@@ -74,7 +74,7 @@ export default async function PublicProfilePage({
 
             {/* Display Name */}
             <div>
-              <h1 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <h1 className="text-3xl font-bold bg-linear-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
                 {profile.display_name || profile.username}
               </h1>
               <p className="text-gray-400 text-sm mt-1">@{profile.username}</p>

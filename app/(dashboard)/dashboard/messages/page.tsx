@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, MessageSquare, Trash2, Eye, Search } from "lucide-react";
+import { Loader2, MessageSquare, Trash2, Eye, Search, Shield, AlertTriangle } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { BlockSenderDialog } from "@/components/messages/block-sender-dialog";
+import { ReportMessageDialog } from "@/components/messages/report-message-dialog";
+import { SuspiciousActivityAlert } from "@/components/dashboard/suspicious-activity-alert";
+import { MessageListSkeleton } from "@/components/skeletons/message-skeleton";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth/auth-context";
 import { cn } from "@/lib/utils";
@@ -15,6 +19,7 @@ interface Message {
   content: string;
   is_read: boolean;
   created_at: string;
+  sender_ip_hash: string;
 }
 
 export default function MessagesPage() {
@@ -108,8 +113,14 @@ export default function MessagesPage() {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <Loader2 className="w-8 h-8 animate-spin text-purple-500" />
+      <div className="max-w-4xl mx-auto">
+        <div className="mb-8">
+          <AnimatedGradientText className="text-3xl font-bold mb-2">
+            Messages
+          </AnimatedGradientText>
+          <p className="text-gray-400">Loading messages...</p>
+        </div>
+        <MessageListSkeleton count={3} />
       </div>
     );
   }
@@ -134,21 +145,21 @@ export default function MessagesPage() {
           <Button
             variant={filter === "all" ? "default" : "outline"}
             onClick={() => setFilter("all")}
-            className={filter === "all" ? "bg-gradient-to-r from-purple-600 to-pink-600" : ""}
+            className={filter === "all" ? "bg-linear-to-r from-purple-600 to-pink-600" : ""}
           >
             All
           </Button>
           <Button
             variant={filter === "unread" ? "default" : "outline"}
             onClick={() => setFilter("unread")}
-            className={filter === "unread" ? "bg-gradient-to-r from-purple-600 to-pink-600" : ""}
+            className={filter === "unread" ? "bg-linear-to-r from-purple-600 to-pink-600" : ""}
           >
             Unread ({unreadCount})
           </Button>
           <Button
             variant={filter === "read" ? "default" : "outline"}
             onClick={() => setFilter("read")}
-            className={filter === "read" ? "bg-gradient-to-r from-purple-600 to-pink-600" : ""}
+            className={filter === "read" ? "bg-linear-to-r from-purple-600 to-pink-600" : ""}
           >
             Read
           </Button>
@@ -165,6 +176,11 @@ export default function MessagesPage() {
           />
         </div>
       </div>
+
+      {/* Suspicious Activity Alerts */}
+      {messages.length > 0 && (
+        <SuspiciousActivityAlert messages={messages} />
+      )}
 
       {/* Messages List */}
       {filteredMessages.length === 0 ? (
@@ -191,42 +207,71 @@ export default function MessagesPage() {
                 !message.is_read && "border-l-4 border-l-purple-500"
               )}
             >
-              <div className="flex items-start gap-4">
-                {/* Message content */}
-                <div className="flex-1 min-w-0">
-                  <p className="text-white text-lg mb-2">{message.content}</p>
-                  <p className="text-sm text-gray-500">
-                    {new Date(message.created_at).toLocaleString("en-US", {
-                      month: "short",
-                      day: "numeric",
-                      year: "numeric",
-                      hour: "numeric",
-                      minute: "2-digit",
-                    })}
-                  </p>
-                </div>
+              <div className="space-y-4">
+                <div className="flex items-start gap-4">
+                  {/* Message content */}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-white text-lg mb-2">{message.content}</p>
+                    <p className="text-sm text-gray-500">
+                      {new Date(message.created_at).toLocaleString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                        hour: "numeric",
+                        minute: "2-digit",
+                      })}
+                    </p>
+                  </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-2">
-                  {!message.is_read && (
+                  {/* Quick Actions */}
+                  <div className="flex items-center gap-2">
+                    {!message.is_read && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => markAsRead(message.id)}
+                        title="Mark as read"
+                      >
+                        <Eye className="w-4 h-4" />
+                      </Button>
+                    )}
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => markAsRead(message.id)}
-                      title="Mark as read"
+                      onClick={() => deleteMessage(message.id)}
+                      className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
+                      title="Delete message"
                     >
-                      <Eye className="w-4 h-4" />
+                      <Trash2 className="w-4 h-4" />
                     </Button>
-                  )}
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => deleteMessage(message.id)}
-                    className="text-red-500 hover:text-red-600 hover:bg-red-500/10"
-                    title="Delete message"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
+                  </div>
+                </div>
+
+                {/* Block and Report Actions */}
+                <div className="flex items-center gap-3 pt-2 border-t border-gray-800">
+                  <ReportMessageDialog
+                    messageId={message.id}
+                    trigger={
+                      <Button variant="ghost" size="sm" className="gap-2 text-orange-500 hover:text-orange-600 hover:bg-orange-500/10">
+                        <AlertTriangle className="w-4 h-4" />
+                        Report
+                      </Button>
+                    }
+                  />
+                  <BlockSenderDialog
+                    messageId={message.id}
+                    senderIpHash={message.sender_ip_hash}
+                    onBlocked={() => {
+                      // Optionally remove messages from this sender
+                      fetchMessages();
+                    }}
+                    trigger={
+                      <Button variant="ghost" size="sm" className="gap-2 text-gray-400 hover:text-white hover:bg-gray-800">
+                        <Shield className="w-4 h-4" />
+                        Block Sender
+                      </Button>
+                    }
+                  />
                 </div>
               </div>
             </MagicCard>

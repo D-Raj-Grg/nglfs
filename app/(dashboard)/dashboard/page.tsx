@@ -111,7 +111,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Share Link Card */}
-      <div className="rounded-2xl border bg-gradient-to-br from-purple-500/10 to-pink-500/10 p-6 space-y-4">
+      <div className="rounded-2xl border bg-linear-to-br from-purple-500/10 to-pink-500/10 p-6 space-y-4">
         <h3 className="text-xl font-semibold">Your Anonymous Message Link</h3>
         <p className="text-muted-foreground">
           Share this link to receive anonymous messages

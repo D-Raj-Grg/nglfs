@@ -12,7 +12,7 @@ export default function DashboardLayout({
       <DashboardSidebar />
 
       {/* Main Content */}
-      <main className="lg:ml-64 min-h-screen">
+      <main id="main-content" className="lg:ml-64 min-h-screen pb-24 lg:pb-0" role="main">
         <div className="container mx-auto px-4 py-8 lg:px-8">
           {children}
         </div>

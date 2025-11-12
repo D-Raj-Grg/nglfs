@@ -56,7 +56,7 @@ export default function FeaturesSection() {
           {features.map((feature, index) => (
             <BlurFade key={feature.title} delay={0.2 + index * 0.1}>
               <MagicCard
-                className="group h-full border border-white/5 bg-[#1A1A1A] p-8 backdrop-blur-sm transition-all hover:border-white/10"
+                className="group h-full border border-white/5 bg-[#1A1A1A] p-8 backdrop-blur-sm transition-all rounded-2xl hover:border-white/10"
                 gradientColor={feature.gradient}
                 gradientSize={300}
                 gradientOpacity={0.3}
@@ -90,19 +90,19 @@ export default function FeaturesSection() {
         <BlurFade delay={0.6}>
           <div className="mt-20 grid gap-8 md:grid-cols-3">
             <div className="rounded-2xl border border-white/5 bg-white/5 p-8 text-center backdrop-blur-sm">
-              <div className="mb-2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-5xl font-bold text-transparent">
+              <div className="mb-2 bg-linear-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-5xl font-bold text-transparent">
                 100%
               </div>
               <div className="text-gray-400">Anonymous</div>
             </div>
             <div className="rounded-2xl border border-white/5 bg-white/5 p-8 text-center backdrop-blur-sm">
-              <div className="mb-2 bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-5xl font-bold text-transparent">
+              <div className="mb-2 bg-linear-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-5xl font-bold text-transparent">
                 0
               </div>
               <div className="text-gray-400">Ads or Tracking</div>
             </div>
             <div className="rounded-2xl border border-white/5 bg-white/5 p-8 text-center backdrop-blur-sm">
-              <div className="mb-2 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-5xl font-bold text-transparent">
+              <div className="mb-2 bg-linear-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-5xl font-bold text-transparent">
                 Instant
               </div>
               <div className="text-gray-400">Setup</div>

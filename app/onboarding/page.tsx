@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { BlurFade } from "@/components/ui/blur-fade";
 import { AvatarUpload } from "@/components/profile/avatar-upload";
 import { createProfile, useProfileStore } from "@/lib/stores/profile-store";
 import { validateUsername, sanitizeUsername } from "@/lib/validations/username";
@@ -191,13 +192,14 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-950 via-gray-900 to-black">
-      <div className="w-full max-w-2xl">
-        {/* Header */}
-        <div className="text-center mb-8">
-          <AnimatedGradientText className="text-4xl font-bold mb-4">
-            Create Your Profile
-          </AnimatedGradientText>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-gray-950 via-gray-900 to-black">
+      <BlurFade delay={0.1} inView>
+        <div className="w-full max-w-2xl">
+          {/* Header */}
+          <div className="text-center mb-8">
+            <AnimatedGradientText className="text-4xl font-bold mb-4">
+              Create Your Profile
+            </AnimatedGradientText>
           <p className="text-gray-400">
             Set up your anonymous messaging profile in just a few steps
           </p>
@@ -327,7 +329,7 @@ export default function OnboardingPage() {
                 isSubmitting ||
                 usernameAvailability.status !== "available"
               }
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+              className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
             >
               {isSubmitting ? (
                 <>
@@ -348,7 +350,8 @@ export default function OnboardingPage() {
         <p className="text-center text-sm text-gray-500 mt-6">
           Your username will be part of your public profile URL
         </p>
-      </div>
+        </div>
+      </BlurFade>
     </div>
   );
 }

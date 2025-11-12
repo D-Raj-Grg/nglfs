@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid gap-12 md:grid-cols-4">
           {/* Brand */}
           <div className="md:col-span-2">
-            <h3 className="mb-4 bg-gradient-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-2xl font-bold text-transparent">
+            <h3 className="mb-4 bg-linear-to-r from-[#8B5CF6] to-[#EC4899] bg-clip-text text-2xl font-bold text-transparent">
               NGLFS
             </h3>
             <p className="mb-4 max-w-md text-gray-400">

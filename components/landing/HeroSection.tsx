@@ -24,7 +24,7 @@ export default function HeroSection() {
         <BlurFade delay={0.1}>
           <div className="mb-6 flex justify-center">
             <AnimatedGradientText className="text-base">
-              <span className="bg-gradient-to-r from-[#8B5CF6] via-[#EC4899] to-[#8B5CF6] bg-clip-text text-transparent">
+              <span className="bg-linear-to-r from-[#8B5CF6] via-[#EC4899] to-[#8B5CF6] bg-clip-text text-transparent">
                 Anonymous Messaging Made Beautiful
               </span>
             </AnimatedGradientText>
@@ -34,7 +34,7 @@ export default function HeroSection() {
         <BlurFade delay={0.2}>
           <h1 className="mb-6 text-5xl font-bold leading-tight tracking-tight text-white md:text-6xl lg:text-7xl">
             Get Anonymous Messages{" "}
-            <span className="bg-gradient-to-r from-[#8B5CF6] via-[#EC4899] to-[#8B5CF6] bg-clip-text text-transparent">
+            <span className="bg-linear-to-r from-[#8B5CF6] via-[#EC4899] to-[#8B5CF6] bg-clip-text text-transparent">
               from Friends
             </span>
           </h1>
@@ -51,7 +51,7 @@ export default function HeroSection() {
         <BlurFade delay={0.4}>
           <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
             <Link href="/signup">
-              <RainbowButton className="group px-8 py-6 text-lg text-black font-semibold">
+              <RainbowButton className="px-8 py-6 text-lg font-semibold">
                 Get Started Free
                 <ArrowRight className="ml-2 inline-block size-5 transition-transform group-hover:translate-x-1" />
               </RainbowButton>

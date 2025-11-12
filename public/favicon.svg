@@ -1,0 +1,30 @@
+<svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6" />
+      <stop offset="100%" stop-color="#EC4899" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur" />
+      <feMerge>
+        <feMergeNode in="coloredBlur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background circle with glassmorphism effect -->
+  <circle cx="50" cy="50" r="45" fill="url(#logo-gradient)" opacity="0.15" />
+  <circle cx="50" cy="50" r="45" stroke="url(#logo-gradient)" stroke-width="2" fill="none" opacity="0.4" />
+
+  <!-- Stylized "N" letterform -->
+  <path
+    d="M 30 65 L 30 35 L 35 35 L 35 55 L 55 35 L 60 35 L 60 65 L 55 65 L 55 45 L 35 65 Z"
+    fill="url(#logo-gradient)"
+    filter="url(#glow)"
+  />
+
+  <!-- Message bubble accent -->
+  <circle cx="70" cy="30" r="8" fill="url(#logo-gradient)" opacity="0.6" />
+  <circle cx="70" cy="30" r="4" fill="#EC4899" />
+</svg>

@@ -88,7 +88,7 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
       <div className="space-y-6 py-8">
         {/* Success Message */}
         <div className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-gradient-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-20 h-20 bg-linear-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
             <svg
               className="w-10 h-10 text-white"
               fill="none"
@@ -117,7 +117,7 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
         {/* Send Another Button */}
         <Button
           onClick={() => setShowSuccess(false)}
-          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
         >
           Send Another Message
         </Button>
