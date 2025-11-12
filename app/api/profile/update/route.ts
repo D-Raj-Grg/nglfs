@@ -96,9 +96,6 @@ export async function PUT(request: NextRequest) {
 
     const { username, display_name, bio, avatar_url } = validationResult.data;
 
-    // Log incoming avatar_url for debugging
-    console.log("[Profile Update] Incoming avatar_url:", avatar_url);
-
     // Prepare update object
     const updates: any = {};
 
@@ -148,7 +145,6 @@ export async function PUT(request: NextRequest) {
     }
     if (avatar_url !== undefined) {
       updates.avatar_url = avatar_url || null;
-      console.log("[Profile Update] Setting avatar_url in updates:", updates.avatar_url);
     }
 
     // Check if there are any updates
@@ -168,8 +164,7 @@ export async function PUT(request: NextRequest) {
       .single();
 
     if (updateError) {
-      console.error("[Profile Update] Error updating profile:", updateError);
-      console.error("[Profile Update] Attempted updates:", updates);
+      console.error("Error updating profile:", updateError);
 
       // Handle unique constraint violation
       if (updateError.code === "23505") {
@@ -184,12 +179,6 @@ export async function PUT(request: NextRequest) {
         { status: 500 }
       );
     }
-
-    console.log("[Profile Update] Successfully updated profile:", {
-      id: profile.id,
-      username: profile.username,
-      avatar_url: profile.avatar_url,
-    });
 
     return NextResponse.json(
       {

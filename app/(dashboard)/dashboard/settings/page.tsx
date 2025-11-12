@@ -305,12 +305,9 @@ export default function ProfileSettingsPage() {
                     const result = await response.json();
                     // Update Zustand store with full profile from server
                     updateProfile(result.profile);
-                    console.log("[Settings] Avatar updated in database:", result.profile.avatar_url);
-                  } else {
-                    console.error("[Settings] Failed to update avatar in database");
                   }
                 } catch (error) {
-                  console.error("[Settings] Error updating avatar:", error);
+                  console.error("Error updating avatar:", error);
                 }
               }}
             />
