@@ -236,6 +236,8 @@ export async function POST(request: NextRequest) {
     // Send Push Notification
     // =====================================================
     try {
+      console.log(`[Notifications] Checking notification preferences for user ${recipient.id}`);
+
       // Fetch recipient's notification preferences
       const { data: recipientProfile, error: profileError } = await supabase
         .from("profiles")
@@ -243,17 +245,29 @@ export async function POST(request: NextRequest) {
         .eq("id", recipient.id)
         .single();
 
-      if (!profileError && recipientProfile?.notification_preferences) {
+      if (profileError) {
+        console.error("[Notifications] Error fetching profile:", profileError);
+      } else if (!recipientProfile) {
+        console.log("[Notifications] Profile not found");
+      } else if (!recipientProfile.notification_preferences) {
+        console.log("[Notifications] No notification preferences set for user");
+      } else {
         const preferences = recipientProfile.notification_preferences as {
           enabled?: boolean;
           show_preview?: boolean;
         };
+
+        console.log("[Notifications] Preferences:", JSON.stringify(preferences));
 
         // Only send notification if enabled
         if (preferences.enabled) {
           const contentMode: NotificationContentMode = preferences.show_preview
             ? "preview"
             : "private";
+
+          console.log(
+            `[Notifications] Sending push notification to user ${recipient.id} (mode: ${contentMode})`
+          );
 
           // Send push notification (don't await - fire and forget)
           sendMessageNotification(
@@ -267,11 +281,11 @@ export async function POST(request: NextRequest) {
           });
 
           console.log(
-            `[Notifications] Push notification queued for user ${recipient.id} (mode: ${contentMode})`
+            `[Notifications] Push notification queued for user ${recipient.id}`
           );
         } else {
           console.log(
-            `[Notifications] Notifications disabled for user ${recipient.id}`
+            `[Notifications] Notifications disabled for user ${recipient.id} (enabled: ${preferences.enabled})`
           );
         }
       }

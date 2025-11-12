@@ -276,13 +276,44 @@ export default function ProfileSettingsPage() {
 
       {/* Settings Tabs */}
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-6 mb-6">
-          <TabsTrigger value="profile">Profile</TabsTrigger>
-          <TabsTrigger value="appearance">Appearance</TabsTrigger>
-          <TabsTrigger value="notifications">Notifications</TabsTrigger>
-          <TabsTrigger value="privacy">Privacy</TabsTrigger>
-          <TabsTrigger value="security">Security</TabsTrigger>
-          <TabsTrigger value="account">Account</TabsTrigger>
+        {/* Responsive tabs: 2 columns on mobile, 3 on tablet, all in one row on desktop */}
+        <TabsList className="w-full h-auto p-1 gap-1 bg-gray-800/50 backdrop-blur-sm grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 mb-6">
+          <TabsTrigger
+            value="profile"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Profile
+          </TabsTrigger>
+          <TabsTrigger
+            value="appearance"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Appearance
+          </TabsTrigger>
+          <TabsTrigger
+            value="notifications"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Notifications
+          </TabsTrigger>
+          <TabsTrigger
+            value="privacy"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Privacy
+          </TabsTrigger>
+          <TabsTrigger
+            value="security"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Security
+          </TabsTrigger>
+          <TabsTrigger
+            value="account"
+            className="px-4 py-2.5 text-sm data-[state=active]:bg-linear-to-r data-[state=active]:from-purple-600 data-[state=active]:to-pink-600 data-[state=active]:text-white"
+          >
+            Account
+          </TabsTrigger>
         </TabsList>
 
         {/* Profile Tab */}

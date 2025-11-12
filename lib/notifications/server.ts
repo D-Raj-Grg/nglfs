@@ -6,7 +6,7 @@
  */
 
 import webpush from 'web-push';
-import { createClient } from '@/lib/supabase/server';
+import { createClient, createAdminClient } from '@/lib/supabase/server';
 import type {
   PushSubscriptionData,
   NotificationContentMode,
@@ -58,9 +58,14 @@ try {
 
 /**
  * Get all push subscriptions for a user
+ * Uses admin client to bypass RLS when sending notifications
  */
 export async function getUserSubscriptions(userId: string): Promise<PushSubscriptionData[]> {
-  const supabase = await createClient();
+  // Use admin client to bypass RLS - this is safe because we're sending notifications
+  // on behalf of the user who owns the subscription
+  const supabase = await createAdminClient();
+
+  console.log('[Notifications] getUserSubscriptions called for userId:', userId);
 
   const { data, error } = await supabase
     .from('push_subscriptions')
@@ -70,6 +75,11 @@ export async function getUserSubscriptions(userId: string): Promise<PushSubscrip
   if (error) {
     console.error('[Notifications] Failed to get user subscriptions:', error);
     return [];
+  }
+
+  console.log('[Notifications] Database query returned:', data?.length || 0, 'rows');
+  if (data && data.length > 0) {
+    console.log('[Notifications] First subscription data:', JSON.stringify(data[0]));
   }
 
   return data.map((row) => row.subscription_data as PushSubscriptionData);
@@ -84,19 +94,28 @@ export async function saveSubscription(
 ): Promise<{ success: boolean; subscriptionId?: string; error?: string }> {
   const supabase = await createClient();
 
+  console.log('[Notifications] saveSubscription called:', { userId, endpoint: subscription.endpoint });
+
   // Check if subscription already exists (by endpoint)
-  const { data: existing } = await supabase
+  const { data: existing, error: existingError } = await supabase
     .from('push_subscriptions')
     .select('id')
     .eq('endpoint', subscription.endpoint)
     .single();
 
+  if (existingError && existingError.code !== 'PGRST116') {
+    // PGRST116 is "not found" which is expected when no subscription exists
+    console.error('[Notifications] Error checking existing subscription:', existingError);
+  }
+
   if (existing) {
+    console.log('[Notifications] Updating existing subscription:', existing.id);
     // Update existing subscription
     const { error } = await supabase
       .from('push_subscriptions')
       .update({
         subscription_data: subscription,
+        user_id: userId, // Ensure user_id is updated too
         updated_at: new Date().toISOString(),
       })
       .eq('id', existing.id);
@@ -106,9 +125,11 @@ export async function saveSubscription(
       return { success: false, error: error.message };
     }
 
+    console.log('[Notifications] Subscription updated successfully');
     return { success: true, subscriptionId: existing.id };
   }
 
+  console.log('[Notifications] Inserting new subscription');
   // Insert new subscription
   const { data, error } = await supabase
     .from('push_subscriptions')
@@ -125,6 +146,7 @@ export async function saveSubscription(
     return { success: false, error: error.message };
   }
 
+  console.log('[Notifications] Subscription saved successfully:', data.id);
   return { success: true, subscriptionId: data.id };
 }
 
@@ -259,10 +281,14 @@ export async function sendMessageNotification(
   messageContent: string,
   mode: NotificationContentMode = 'private'
 ): Promise<{ sent: number; failed: number }> {
+  console.log('[Notifications] sendMessageNotification called:', { userId, messageId, mode });
+
   const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
 
   // Get user's subscriptions
   const subscriptions = await getUserSubscriptions(userId);
+
+  console.log(`[Notifications] Found ${subscriptions.length} subscriptions for user ${userId}`);
 
   if (subscriptions.length === 0) {
     console.log('[Notifications] No subscriptions found for user:', userId);
@@ -271,6 +297,7 @@ export async function sendMessageNotification(
 
   // Build notification payload
   const payload = buildMessageNotificationPayload(messageId, messageContent, mode, appUrl);
+  console.log('[Notifications] Notification payload:', JSON.stringify(payload));
 
   // Send to all subscriptions
   const results = await Promise.allSettled(
@@ -286,10 +313,15 @@ export async function sendMessageNotification(
       sent++;
     } else {
       failed++;
+      if (result.status === 'rejected') {
+        console.error('[Notifications] Send failed:', result.reason);
+      } else if (result.status === 'fulfilled') {
+        console.error('[Notifications] Send failed:', result.value.error);
+      }
     }
   }
 
-  console.log('[Notifications] Message notification sent:', { userId, sent, failed });
+  console.log('[Notifications] Message notification completed:', { userId, messageId, sent, failed });
 
   return { sent, failed };
 }
@@ -355,7 +387,7 @@ export async function sendTestNotification(userId: string): Promise<{ sent: numb
  * Should be called periodically (e.g., daily cron job)
  */
 export async function cleanupExpiredSubscriptions(): Promise<number> {
-  const supabase = await createClient();
+  const supabase = await createAdminClient();
 
   const { data, error } = await supabase.rpc('cleanup_expired_subscriptions');
 

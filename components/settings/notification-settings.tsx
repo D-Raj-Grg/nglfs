@@ -168,15 +168,88 @@ export function NotificationSettings() {
 
   // Check if notifications are not supported
   if (!isNotificationSupported()) {
+    // Detect browser and platform
+    const isIOS = typeof window !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = typeof window !== 'undefined' && /Android/.test(navigator.userAgent);
+    const isSafari = typeof window !== 'undefined' && /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const isChrome = typeof window !== 'undefined' && /Chrome|CriOS/.test(navigator.userAgent);
+
+    // Chrome on iOS uses Safari's WebKit engine, so it has the same limitations
+    const isChromeOnIOS = isIOS && isChrome;
+
+    // Log for debugging
+    console.log('[NotificationSettings] Browser detection:', {
+      isIOS,
+      isAndroid,
+      isSafari,
+      isChrome,
+      isChromeOnIOS,
+      userAgent: typeof window !== 'undefined' ? navigator.userAgent : 'N/A',
+      hasServiceWorker: typeof navigator !== 'undefined' && 'serviceWorker' in navigator,
+      hasPushManager: typeof window !== 'undefined' && 'PushManager' in window,
+      hasNotification: typeof window !== 'undefined' && 'Notification' in window,
+    });
+
     return (
       <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-6">
         <div className="flex items-start gap-3">
           <AlertCircle className="w-5 h-5 text-yellow-400 shrink-0 mt-0.5" />
           <div>
             <h3 className="text-yellow-200 font-semibold mb-1">Not Supported</h3>
-            <p className="text-yellow-300/80 text-sm">
-              Push notifications are not supported in your current browser. Please use a modern browser like Chrome, Firefox, Safari, or Edge.
-            </p>
+            {isIOS ? (
+              <div className="text-yellow-300/80 text-sm space-y-2">
+                <p>
+                  {isChromeOnIOS
+                    ? "Chrome on iOS uses Safari's engine and has the same limitations."
+                    : "Push notifications on iOS Safari"} require iOS 16.4+ and the app to be installed as a PWA (Progressive Web App).
+                </p>
+                <div className="mt-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                  <p className="font-semibold mb-2">To enable notifications on iOS:</p>
+                  <ol className="list-decimal list-inside space-y-1 text-xs">
+                    <li>Open this site in <strong>Safari</strong> (not Chrome)</li>
+                    <li>Tap the Share button (box with arrow up)</li>
+                    <li>Scroll down and select "Add to Home Screen"</li>
+                    <li>Open the app from your Home Screen icon</li>
+                    <li>Come back to Settings and enable notifications</li>
+                  </ol>
+                </div>
+                <p className="text-xs mt-2 text-yellow-400/90 font-medium">
+                  ⚠️ Important: All iOS browsers (Chrome, Firefox, etc.) use Safari's engine and require PWA installation for notifications.
+                </p>
+              </div>
+            ) : isAndroid && isChrome ? (
+              <div className="text-yellow-300/80 text-sm space-y-2">
+                <p>
+                  Chrome on Android should support push notifications. However, it seems your device or browser version may not support them.
+                </p>
+                <div className="mt-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                  <p className="font-semibold mb-2">Requirements:</p>
+                  <ul className="list-disc list-inside space-y-1 text-xs">
+                    <li>Android 5.0+ (Lollipop or later)</li>
+                    <li>Chrome 42+ (latest version recommended)</li>
+                    <li>HTTPS connection (or localhost)</li>
+                    <li>Notifications enabled in Android Settings</li>
+                  </ul>
+                </div>
+                <p className="text-xs mt-2">
+                  Check browser console for detailed error information.
+                </p>
+              </div>
+            ) : (
+              <div className="text-yellow-300/80 text-sm space-y-2">
+                <p>
+                  Push notifications are not supported in your current browser.
+                </p>
+                <div className="mt-3 p-3 bg-yellow-500/5 rounded-lg border border-yellow-500/20">
+                  <p className="font-semibold mb-2">Supported browsers:</p>
+                  <ul className="list-disc list-inside space-y-1 text-xs">
+                    <li><strong>Desktop:</strong> Chrome, Firefox, Edge, Safari 16+</li>
+                    <li><strong>Android:</strong> Chrome 42+, Firefox, Samsung Internet</li>
+                    <li><strong>iOS:</strong> Safari 16.4+ (as PWA only)</li>
+                  </ul>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
