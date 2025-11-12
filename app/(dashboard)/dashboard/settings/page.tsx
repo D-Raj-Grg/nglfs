@@ -291,7 +291,28 @@ export default function ProfileSettingsPage() {
           <div className="flex justify-center">
             <AvatarUpload
               currentAvatarUrl={avatarUrl}
-              onUploadComplete={(url) => setAvatarUrl(url)}
+              onUploadComplete={async (url) => {
+                setAvatarUrl(url);
+                // Immediately save to database and update Zustand store
+                try {
+                  const response = await fetch("/api/profile/update", {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ avatar_url: url }),
+                  });
+
+                  if (response.ok) {
+                    const result = await response.json();
+                    // Update Zustand store with full profile from server
+                    updateProfile(result.profile);
+                    console.log("[Settings] Avatar updated in database:", result.profile.avatar_url);
+                  } else {
+                    console.error("[Settings] Failed to update avatar in database");
+                  }
+                } catch (error) {
+                  console.error("[Settings] Error updating avatar:", error);
+                }
+              }}
             />
           </div>
 

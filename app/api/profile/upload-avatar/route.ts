@@ -85,6 +85,12 @@ export async function POST(request: NextRequest) {
       data: { publicUrl },
     } = supabase.storage.from("avatars").getPublicUrl(data.path);
 
+    console.log("[Upload Avatar] Successfully uploaded avatar:", {
+      userId: user.id,
+      path: data.path,
+      publicUrl,
+    });
+
     return NextResponse.json(
       {
         url: publicUrl,

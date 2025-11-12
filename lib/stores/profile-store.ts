@@ -200,6 +200,8 @@ export async function uploadAvatar(file: File): Promise<{
     const formData = new FormData();
     formData.append("file", file);
 
+    console.log("[ProfileStore] Uploading avatar file:", file.name, file.type, file.size);
+
     const response = await fetch("/api/profile/upload-avatar", {
       method: "POST",
       body: formData,
@@ -208,13 +210,15 @@ export async function uploadAvatar(file: File): Promise<{
     const data = await response.json();
 
     if (!response.ok) {
+      console.error("[ProfileStore] Upload failed:", data.error);
       setError(data.error || "Failed to upload avatar");
       return { success: false, error: data.error };
     }
 
+    console.log("[ProfileStore] Upload successful. Returned URL:", data.url);
     return { success: true, url: data.url };
   } catch (error) {
-    console.error("Error uploading avatar:", error);
+    console.error("[ProfileStore] Error uploading avatar:", error);
     const errorMessage = "Failed to upload avatar";
     setError(errorMessage);
     return { success: false, error: errorMessage };

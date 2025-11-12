@@ -76,17 +76,20 @@ export function AvatarUpload({
     // Upload to server
     setIsUploading(true);
     try {
+      console.log("[AvatarUpload] Starting upload for file:", file.name);
       const result = await uploadAvatar(file);
 
       if (result.success && result.url) {
+        console.log("[AvatarUpload] Upload successful, URL:", result.url);
         toast.success("Avatar uploaded successfully!");
         onUploadComplete?.(result.url);
       } else {
+        console.error("[AvatarUpload] Upload failed:", result.error);
         toast.error(result.error || "Failed to upload avatar");
         setPreview(currentAvatarUrl || null);
       }
     } catch (error) {
-      console.error("Error uploading avatar:", error);
+      console.error("[AvatarUpload] Error uploading avatar:", error);
       toast.error("Failed to upload avatar");
       setPreview(currentAvatarUrl || null);
     } finally {
