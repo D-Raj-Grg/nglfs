@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createHash } from "crypto";
+import { getHashedIP, getClientIP } from "@/lib/utils/ip-hash";
+import { getParsedUserAgent } from "@/lib/utils/user-agent-parser";
+import { getClassifiedReferrer } from "@/lib/utils/referrer-classifier";
+import { extractUTMParams } from "@/lib/utils/utm-params";
 
 /**
  * Message send validation schema
@@ -8,37 +11,25 @@ import { createHash } from "crypto";
 const messageSendSchema = z.object({
   recipient_username: z.string().min(3).max(20),
   content: z.string().min(1).max(500),
+  // Optional client-side tracking data
+  clientData: z
+    .object({
+      timezone: z.string().optional(),
+      language: z.string().optional(),
+      screenResolution: z.string().optional(),
+      viewportSize: z.string().optional(),
+      availableScreen: z.string().optional(),
+      colorDepth: z.number().optional(),
+      pixelRatio: z.number().optional(),
+      touchSupport: z.boolean().optional(),
+      connectionType: z.string().nullable().optional(),
+    })
+    .optional(),
 });
 
 /**
- * Hash IP address for privacy (SHA-256)
- */
-function hashIP(ip: string): string {
-  return createHash("sha256").update(ip).digest("hex");
-}
-
-/**
- * Get client IP address from request
- */
-function getClientIP(request: NextRequest): string {
-  // Try to get IP from various headers (for proxies, load balancers)
-  const forwardedFor = request.headers.get("x-forwarded-for");
-  if (forwardedFor) {
-    return forwardedFor.split(",")[0].trim();
-  }
-
-  const realIP = request.headers.get("x-real-ip");
-  if (realIP) {
-    return realIP;
-  }
-
-  // Fallback to a placeholder (should not happen in production)
-  return "unknown";
-}
-
-/**
  * Check rate limit for anonymous message sending
- * Limit: 3 messages per IP per hour
+ * Limit: 10 messages per IP per hour
  */
 async function checkRateLimit(
   supabase: any,
@@ -60,7 +51,7 @@ async function checkRateLimit(
   }
 
   const messageCount = count || 0;
-  const limit = 3;
+  const limit = 10;
 
   if (messageCount >= limit) {
     // Find the oldest message to calculate reset time
@@ -151,11 +142,14 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { recipient_username, content } = validationResult.data;
+    const { recipient_username, content, clientData } = validationResult.data;
 
-    // Get sender IP and hash it
-    const clientIP = getClientIP(request);
-    const ipHash = hashIP(clientIP);
+    // Collect enhanced tracking data
+    const ipHash = getHashedIP(request.headers);
+    const rawIP = getClientIP(request.headers); // Raw IP for recipient visibility
+    const userAgent = getParsedUserAgent(request.headers);
+    const referrer = getClassifiedReferrer(request.headers);
+    const utmParams = extractUTMParams(request.nextUrl.searchParams);
 
     // Find recipient profile
     const { data: recipient, error: recipientError } = await supabase
@@ -191,21 +185,39 @@ export async function POST(request: NextRequest) {
 
       return NextResponse.json(
         {
-          error: `Rate limit exceeded. You can send ${3} messages per hour. Try again after ${resetTime}.`,
+          error: `Rate limit exceeded. You can send 10 messages per hour. Try again after ${resetTime}.`,
           resetAt: rateLimit.resetAt,
         },
         { status: 429 }
       );
     }
 
-    // Insert message
+    // Insert message with enhanced tracking data
     const { data: message, error: insertError } = await supabase
       .from("messages")
       .insert({
         recipient_id: recipient.id,
         content: content.trim(),
         sender_ip_hash: ipHash,
+        sender_ip_raw: rawIP, // Raw IP address for recipient visibility
         is_read: false,
+        // Server-side tracking (User-Agent, IP, Referrer)
+        sender_device_type: userAgent.device.type,
+        sender_browser: userAgent.browser.fullName,
+        sender_os: userAgent.os.fullName,
+        sender_referrer_platform: referrer.platform,
+        sender_utm_source: utmParams.source,
+        sender_utm_campaign: utmParams.campaign,
+        // Client-side tracking (from JavaScript APIs)
+        sender_timezone: clientData?.timezone || null,
+        sender_language: clientData?.language || null,
+        sender_screen_resolution: clientData?.screenResolution || null,
+        sender_viewport_size: clientData?.viewportSize || null,
+        sender_available_screen: clientData?.availableScreen || null,
+        sender_color_depth: clientData?.colorDepth || null,
+        sender_pixel_ratio: clientData?.pixelRatio || null,
+        sender_touch_support: clientData?.touchSupport || false,
+        sender_connection_type: clientData?.connectionType || null,
       })
       .select()
       .single();

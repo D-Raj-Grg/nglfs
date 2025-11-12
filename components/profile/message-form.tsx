@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { collectClientTrackingData } from "@/components/tracking/client-tracker";
 
 interface MessageFormProps {
   recipientUsername: string;
@@ -40,6 +41,9 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
     setIsSubmitting(true);
 
     try {
+      // Collect comprehensive client-side tracking data
+      const clientTracking = collectClientTrackingData();
+
       const response = await fetch("/api/messages/send", {
         method: "POST",
         headers: {
@@ -48,6 +52,18 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
         body: JSON.stringify({
           recipient_username: recipientUsername,
           content: message.trim(),
+          // Include full client tracking data for comprehensive analytics
+          clientData: {
+            timezone: clientTracking.timezone,
+            language: clientTracking.language,
+            screenResolution: clientTracking.screenResolution,
+            viewportSize: clientTracking.viewportSize,
+            availableScreen: clientTracking.availableScreen,
+            colorDepth: clientTracking.colorDepth,
+            pixelRatio: clientTracking.pixelRatio,
+            touchSupport: clientTracking.touchSupport,
+            connectionType: clientTracking.connectionType,
+          },
         }),
       });
 

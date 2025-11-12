@@ -6,6 +6,7 @@ import { ShareProfile } from "@/components/profile/share-profile";
 import { Particles } from "@/components/ui/particles";
 import { MagicCard } from "@/components/ui/magic-card";
 import { User } from "lucide-react";
+import { ClientTracker } from "@/components/tracking/client-tracker";
 
 interface PublicProfilePageProps {
   params: Promise<{
@@ -37,12 +38,11 @@ export default async function PublicProfilePage({
     notFound();
   }
 
-  // Track profile visit (we'll implement this later with IP hashing)
-  // For now, just log the visit
-  // TODO: Implement visit tracking with IP hashing
-
   return (
     <div className="relative min-h-screen flex items-center justify-center p-4 bg-linear-to-br from-gray-950 via-gray-900 to-black overflow-hidden">
+      {/* Enhanced Tracking - Invisible component that tracks visits */}
+      <ClientTracker profileId={profile.id} />
+
       {/* Animated Background */}
       <Particles
         className="absolute inset-0 z-0"

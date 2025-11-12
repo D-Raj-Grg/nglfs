@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Loader2, MessageSquare, Trash2, Eye, Search, Shield, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { Loader2, MessageSquare, Trash2, Eye, Search, Shield, AlertTriangle, ExternalLink } from "lucide-react";
 import { MagicCard } from "@/components/ui/magic-card";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
 import { Button } from "@/components/ui/button";
@@ -18,8 +19,14 @@ interface Message {
   id: string;
   content: string;
   is_read: boolean;
+  is_flagged?: boolean;
   created_at: string;
   sender_ip_hash: string;
+  sender_device_type?: string | null;
+  sender_browser?: string | null;
+  sender_os?: string | null;
+  sender_referrer_platform?: string | null;
+  sender_utm_source?: string | null;
 }
 
 export default function MessagesPage() {
@@ -212,19 +219,42 @@ export default function MessagesPage() {
                   {/* Message content */}
                   <div className="flex-1 min-w-0">
                     <p className="text-white text-lg mb-2">{message.content}</p>
-                    <p className="text-sm text-gray-500">
-                      {new Date(message.created_at).toLocaleString("en-US", {
-                        month: "short",
-                        day: "numeric",
-                        year: "numeric",
-                        hour: "numeric",
-                        minute: "2-digit",
-                      })}
-                    </p>
+                    <div className="flex items-center gap-3 flex-wrap">
+                      <p className="text-sm text-gray-500">
+                        {new Date(message.created_at).toLocaleString("en-US", {
+                          month: "short",
+                          day: "numeric",
+                          year: "numeric",
+                          hour: "numeric",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      {/* Quick tracking info badges */}
+                      {message.sender_device_type && (
+                        <span className="text-xs text-gray-400 bg-gray-800/50 px-2 py-1 rounded-full capitalize">
+                          📱 {message.sender_device_type}
+                        </span>
+                      )}
+                      {message.sender_referrer_platform && message.sender_referrer_platform !== 'direct' && (
+                        <span className="text-xs text-gray-400 bg-purple-500/10 px-2 py-1 rounded-full capitalize">
+                          🔗 {message.sender_referrer_platform}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {/* Quick Actions */}
                   <div className="flex items-center gap-2">
+                    <Link href={`/dashboard/messages/${message.id}`}>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        title="View details & tracking"
+                        className="text-purple-400 hover:text-purple-300 hover:bg-purple-500/10"
+                      >
+                        <ExternalLink className="w-4 h-4" />
+                      </Button>
+                    </Link>
                     {!message.is_read && (
                       <Button
                         variant="ghost"

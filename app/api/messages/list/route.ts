@@ -24,10 +24,22 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // Get messages for this user
+    // Get messages for this user with tracking fields
     const { data: messages, error } = await supabase
       .from("messages")
-      .select("id, content, is_read, created_at, sender_ip_hash")
+      .select(`
+        id,
+        content,
+        is_read,
+        is_flagged,
+        created_at,
+        sender_ip_hash,
+        sender_device_type,
+        sender_browser,
+        sender_os,
+        sender_referrer_platform,
+        sender_utm_source
+      `)
       .eq("recipient_id", user.id)
       .order("created_at", { ascending: false });
 
