@@ -17,7 +17,7 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
 
-  const MAX_LENGTH = 500;
+  const MAX_LENGTH = 1000;
   const remainingChars = MAX_LENGTH - message.length;
 
   /**
@@ -148,7 +148,7 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           placeholder="type your anonymous message here..."
-          className="min-h-[120px] resize-none text-base border-gray-300 focus:border-black focus:ring-black"
+          className="min-h-[120px] resize-none text-base text-black border-gray-300 focus:border-black focus:ring-black"
           maxLength={MAX_LENGTH}
           disabled={isSubmitting}
         />

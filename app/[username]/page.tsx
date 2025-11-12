@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { MessageForm } from "@/components/profile/message-form";
@@ -47,15 +48,18 @@ export default async function PublicProfilePage({
         <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
           <div className="flex items-center gap-4">
             {/* Avatar */}
-            <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0">
+            <div className="relative w-16 h-16 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-gray-700 to-gray-900">
               {profile.avatar_url ? (
-                <img
+                <Image
                   src={profile.avatar_url}
                   alt={profile.display_name || profile.username}
-                  className="w-full h-full object-cover"
+                  fill
+                  className="object-cover"
+                  sizes="64px"
+                  unoptimized
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center">
+                <div className="w-full h-full flex items-center justify-center">
                   <User className="w-8 h-8 text-white" />
                 </div>
               )}
@@ -93,7 +97,7 @@ export default async function PublicProfilePage({
         <div className="text-center space-y-4">
           <Link
             href="/"
-            className="block w-full bg-black text-white text-lg font-bold py-4 rounded-full hover:bg-gray-900 transition-colors"
+            className="block w-full bg-secondary text-white text-xl font-bold py-2 rounded-full hover:bg-gray-900 transition-colors"
           >
             get your own messages!
           </Link>
