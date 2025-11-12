@@ -13,6 +13,7 @@ import { SuspiciousActivityAlert } from "@/components/dashboard/suspicious-activ
 import { MessageListSkeleton } from "@/components/skeletons/message-skeleton";
 import { toast } from "sonner";
 import { useAuth } from "@/lib/auth/auth-context";
+import { useProfileStore } from "@/lib/stores/profile-store";
 import { cn } from "@/lib/utils";
 
 interface Message {
@@ -31,6 +32,7 @@ interface Message {
 
 export default function MessagesPage() {
   const { user } = useAuth();
+  const { updateProfile } = useProfileStore();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
@@ -46,7 +48,12 @@ export default function MessagesPage() {
       const data = await response.json();
 
       if (response.ok) {
-        setMessages(data.messages || []);
+        const fetchedMessages = data.messages || [];
+        setMessages(fetchedMessages);
+
+        // Update profile store with unread count
+        const unreadCount = fetchedMessages.filter((msg: Message) => !msg.is_read).length;
+        updateProfile({ message_count: unreadCount });
       } else {
         toast.error(data.error || "Failed to load messages");
       }
@@ -70,11 +77,17 @@ export default function MessagesPage() {
       });
 
       if (response.ok) {
-        setMessages((prev) =>
-          prev.map((msg) =>
+        setMessages((prev) => {
+          const updated = prev.map((msg) =>
             msg.id === messageId ? { ...msg, is_read: true } : msg
-          )
-        );
+          );
+
+          // Update unread count in profile store
+          const unreadCount = updated.filter((msg) => !msg.is_read).length;
+          updateProfile({ message_count: unreadCount });
+
+          return updated;
+        });
       }
     } catch (error) {
       console.error("Error marking message as read:", error);
@@ -91,7 +104,15 @@ export default function MessagesPage() {
       });
 
       if (response.ok) {
-        setMessages((prev) => prev.filter((msg) => msg.id !== messageId));
+        setMessages((prev) => {
+          const updated = prev.filter((msg) => msg.id !== messageId);
+
+          // Update unread count in profile store
+          const unreadCount = updated.filter((msg) => !msg.is_read).length;
+          updateProfile({ message_count: unreadCount });
+
+          return updated;
+        });
         toast.success("Message deleted");
       } else {
         toast.error("Failed to delete message");
