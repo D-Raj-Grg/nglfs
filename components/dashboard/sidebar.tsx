@@ -137,7 +137,7 @@ export function DashboardSidebar() {
           </nav>
 
           {/* Sign Out Button */}
-          <div className="p-4 border-t border-gray-800">
+          <div className="p-4 border-t border-gray-800 space-y-4">
             <Button
               variant="outline"
               onClick={handleSignOut}
@@ -146,6 +146,17 @@ export function DashboardSidebar() {
               <LogOut className="w-5 h-5" />
               Sign Out
             </Button>
+
+            {/* Footer Links */}
+            <div className="flex justify-center gap-3 text-xs text-gray-500">
+              <Link href="/privacy" className="hover:text-gray-400">
+                Privacy
+              </Link>
+              <span>·</span>
+              <Link href="/terms" className="hover:text-gray-400">
+                Terms
+              </Link>
+            </div>
           </div>
         </div>
       </aside>

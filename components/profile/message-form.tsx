@@ -1,10 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { Send, Loader2 } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { ShinyButton } from "@/components/ui/shiny-button";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { collectClientTrackingData } from "@/components/tracking/client-tracker";
@@ -104,9 +103,9 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
       <div className="space-y-6 py-8">
         {/* Success Message */}
         <div className="text-center space-y-4">
-          <div className="mx-auto w-20 h-20 bg-linear-to-r from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+          <div className="mx-auto w-16 h-16 bg-green-500 rounded-full flex items-center justify-center">
             <svg
-              className="w-10 h-10 text-white"
+              className="w-8 h-8 text-white"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -114,18 +113,18 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
+                strokeWidth={3}
                 d="M5 13l4 4L19 7"
               />
             </svg>
           </div>
 
           <div>
-            <h3 className="text-2xl font-bold text-white mb-2">
-              Message Sent! 🎉
+            <h3 className="text-xl font-bold text-black mb-2">
+              message sent! 🎉
             </h3>
-            <p className="text-gray-400">
-              Your anonymous message has been delivered.
+            <p className="text-gray-600 text-sm">
+              your anonymous message has been delivered.
             </p>
           </div>
         </div>
@@ -133,9 +132,9 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
         {/* Send Another Button */}
         <Button
           onClick={() => setShowSuccess(false)}
-          className="w-full bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          className="w-full bg-black text-white rounded-full py-4 text-lg font-bold hover:bg-gray-900 transition-colors"
         >
-          Send Another Message
+          send another message
         </Button>
       </div>
     );
@@ -148,54 +147,48 @@ export function MessageForm({ recipientUsername }: MessageFormProps) {
         <Textarea
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Type your anonymous message here... Be kind!"
-          className="min-h-[150px] resize-none text-base"
+          placeholder="type your anonymous message here..."
+          className="min-h-[120px] resize-none text-base border-gray-300 focus:border-black focus:ring-black"
           maxLength={MAX_LENGTH}
           disabled={isSubmitting}
         />
 
         {/* Character Counter */}
-        <div className="flex justify-between items-center text-sm">
+        <div className="flex justify-end items-center text-xs">
           <span
             className={cn(
               "transition-colors",
               remainingChars < 50
-                ? "text-yellow-500"
+                ? "text-orange-500"
                 : remainingChars === 0
                 ? "text-red-500"
                 : "text-gray-500"
             )}
           >
-            {remainingChars} characters remaining
-          </span>
-          <span className="text-gray-500">
             {message.length}/{MAX_LENGTH}
           </span>
         </div>
       </div>
 
       {/* Submit Button */}
-      <ShinyButton
+      <Button
         type="submit"
         disabled={isSubmitting || !message.trim()}
-        className="w-full"
+        className="w-full bg-black text-white rounded-full py-4 text-lg font-bold hover:bg-gray-900 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         {isSubmitting ? (
           <>
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-            Sending...
+            <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+            sending...
           </>
         ) : (
-          <>
-            <Send className="w-4 h-4 mr-2" />
-            Send Anonymously
-          </>
+          "send!"
         )}
-      </ShinyButton>
+      </Button>
 
       {/* Privacy Notice */}
-      <p className="text-xs text-center text-gray-500">
-        Your message is completely anonymous. The recipient will never know who sent it.
+      <p className="text-xs text-center text-gray-600">
+        your message is completely anonymous. the recipient will never know who sent it.
       </p>
     </form>
   );
