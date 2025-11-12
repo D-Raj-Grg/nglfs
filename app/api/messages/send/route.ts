@@ -4,6 +4,8 @@ import { getHashedIP, getClientIP } from "@/lib/utils/ip-hash";
 import { getParsedUserAgent } from "@/lib/utils/user-agent-parser";
 import { getClassifiedReferrer } from "@/lib/utils/referrer-classifier";
 import { extractUTMParams } from "@/lib/utils/utm-params";
+import { sendMessageNotification } from "@/lib/notifications/server";
+import type { NotificationContentMode } from "@/lib/types/notifications.types";
 
 /**
  * Message send validation schema
@@ -32,7 +34,7 @@ const messageSendSchema = z.object({
  * Limit: 10 messages per IP per hour
  */
 async function checkRateLimit(
-  supabase: any,
+  supabase: ReturnType<typeof import('@supabase/ssr').createServerClient>,
   ipHash: string
 ): Promise<{ allowed: boolean; remaining?: number; resetAt?: Date }> {
   const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
@@ -77,7 +79,7 @@ async function checkRateLimit(
  * Check if sender is blocked by recipient
  */
 async function isBlocked(
-  supabase: any,
+  supabase: ReturnType<typeof import('@supabase/ssr').createServerClient>,
   recipientId: string,
   ipHash: string
 ): Promise<boolean> {
@@ -228,6 +230,54 @@ export async function POST(request: NextRequest) {
         { error: "Failed to send message" },
         { status: 500 }
       );
+    }
+
+    // =====================================================
+    // Send Push Notification
+    // =====================================================
+    try {
+      // Fetch recipient's notification preferences
+      const { data: recipientProfile, error: profileError } = await supabase
+        .from("profiles")
+        .select("notification_preferences")
+        .eq("id", recipient.id)
+        .single();
+
+      if (!profileError && recipientProfile?.notification_preferences) {
+        const preferences = recipientProfile.notification_preferences as {
+          enabled?: boolean;
+          show_preview?: boolean;
+        };
+
+        // Only send notification if enabled
+        if (preferences.enabled) {
+          const contentMode: NotificationContentMode = preferences.show_preview
+            ? "preview"
+            : "private";
+
+          // Send push notification (don't await - fire and forget)
+          sendMessageNotification(
+            recipient.id,
+            message.id,
+            content,
+            contentMode
+          ).catch((error) => {
+            // Log error but don't fail the request
+            console.error("[Notifications] Failed to send push notification:", error);
+          });
+
+          console.log(
+            `[Notifications] Push notification queued for user ${recipient.id} (mode: ${contentMode})`
+          );
+        } else {
+          console.log(
+            `[Notifications] Notifications disabled for user ${recipient.id}`
+          );
+        }
+      }
+    } catch (error) {
+      // Log error but don't fail the request
+      console.error("[Notifications] Error processing notification:", error);
     }
 
     return NextResponse.json(

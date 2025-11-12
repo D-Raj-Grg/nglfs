@@ -15,6 +15,8 @@ import { toast } from "sonner";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { cn } from "@/lib/utils";
+import { NotificationPrompt, useNotificationPrompt } from "@/components/notifications/notification-prompt";
+import { shouldShowPrompt } from "@/lib/notifications/client";
 
 interface Message {
   id: string;
@@ -33,10 +35,12 @@ interface Message {
 export default function MessagesPage() {
   const { user } = useAuth();
   const { updateProfile } = useProfileStore();
+  const { isOpen, show, hide } = useNotificationPrompt();
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread" | "read">("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [hasShownPrompt, setHasShownPrompt] = useState(false);
 
   // Fetch messages
   const fetchMessages = async () => {
@@ -54,6 +58,19 @@ export default function MessagesPage() {
         // Update profile store with unread count
         const unreadCount = fetchedMessages.filter((msg: Message) => !msg.is_read).length;
         updateProfile({ message_count: unreadCount });
+
+        // Show notification prompt if they have messages and we should prompt
+        if (
+          fetchedMessages.length > 0 &&
+          !hasShownPrompt &&
+          shouldShowPrompt()
+        ) {
+          // Delay slightly to let the page render first
+          setTimeout(() => {
+            show();
+            setHasShownPrompt(true);
+          }, 1500);
+        }
       } else {
         toast.error(data.error || "Failed to load messages");
       }
@@ -182,7 +199,7 @@ export default function MessagesPage() {
             onClick={() => setFilter("unread")}
             className={filter === "unread" ? "bg-linear-to-r from-purple-600 to-pink-600" : ""}
           >
-            Unread ({unreadCount})
+            Unread{unreadCount > 0 && ` (${unreadCount})`}
           </Button>
           <Button
             variant={filter === "read" ? "default" : "outline"}
@@ -329,6 +346,9 @@ export default function MessagesPage() {
           ))}
         </div>
       )}
+
+      {/* Notification Permission Prompt */}
+      <NotificationPrompt isOpen={isOpen} onClose={hide} />
     </div>
   );
 }

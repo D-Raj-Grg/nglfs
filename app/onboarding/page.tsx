@@ -19,6 +19,7 @@ import { validateUsername, sanitizeUsername } from "@/lib/validations/username";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/lib/auth/auth-context";
+import { NotificationPrompt, useNotificationPrompt } from "@/components/notifications/notification-prompt";
 
 /**
  * Profile form validation schema
@@ -56,6 +57,7 @@ export default function OnboardingPage() {
   const router = useRouter();
   const { user } = useAuth();
   const { hasProfile } = useProfileStore();
+  const { isOpen, show, hide } = useNotificationPrompt();
 
   const [avatarUrl, setAvatarUrl] = useState<string>("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -167,7 +169,12 @@ export default function OnboardingPage() {
 
       if (result.success) {
         toast.success("Profile created successfully!");
-        router.push("/dashboard");
+
+        // Show notification prompt after successful profile creation
+        // Use setTimeout to ensure it appears after the success toast
+        setTimeout(() => {
+          show();
+        }, 1000);
       } else {
         toast.error(result.error || "Failed to create profile");
       }
@@ -352,6 +359,20 @@ export default function OnboardingPage() {
         </p>
         </div>
       </BlurFade>
+
+      {/* Notification Permission Prompt */}
+      <NotificationPrompt
+        isOpen={isOpen}
+        onClose={() => {
+          hide();
+          // Navigate to dashboard whether they enable or skip
+          router.push("/dashboard");
+        }}
+        onSuccess={() => {
+          // Navigate to dashboard after enabling notifications
+          router.push("/dashboard");
+        }}
+      />
     </div>
   );
 }

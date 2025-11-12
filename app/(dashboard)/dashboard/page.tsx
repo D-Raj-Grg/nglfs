@@ -1,16 +1,35 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Loader2 } from "lucide-react";
 import { useAuth } from "@/lib/auth/auth-context";
 import { useProfileStore, fetchProfile } from "@/lib/stores/profile-store";
 import { AnimatedGradientText } from "@/components/ui/animated-gradient-text";
+import { toast } from "sonner";
+
+interface AnalyticsData {
+  totalMessages: number;
+  totalVisits: number;
+  messagesThisWeek: number;
+  messagesThisMonth: number;
+  visitsThisWeek: number;
+  visitsThisMonth: number;
+  averageMessagesPerDay: number;
+  peakDay: string;
+  recentActivity: Array<{
+    date: string;
+    messages: number;
+    visits: number;
+  }>;
+}
 
 export default function DashboardPage() {
   const router = useRouter();
   const { user, isLoading: authLoading } = useAuth();
   const { profile, hasProfile, isLoading: profileLoading } = useProfileStore();
+  const [analytics, setAnalytics] = useState<AnalyticsData | null>(null);
+  const [isLoadingAnalytics, setIsLoadingAnalytics] = useState(true);
 
   useEffect(() => {
     const checkProfileAndRedirect = async () => {
@@ -37,6 +56,33 @@ export default function DashboardPage() {
 
     checkProfileAndRedirect();
   }, [user, authLoading, hasProfile, router]);
+
+  // Fetch analytics data
+  useEffect(() => {
+    const fetchAnalytics = async () => {
+      if (!user || !hasProfile()) return;
+
+      setIsLoadingAnalytics(true);
+      try {
+        const response = await fetch("/api/analytics/overview");
+        const data = await response.json();
+
+        if (response.ok) {
+          setAnalytics(data);
+        } else {
+          console.error("Failed to fetch analytics:", data.error);
+          toast.error("Failed to load analytics data");
+        }
+      } catch (error) {
+        console.error("Error fetching analytics:", error);
+        toast.error("Failed to load analytics data");
+      } finally {
+        setIsLoadingAnalytics(false);
+      }
+    };
+
+    fetchAnalytics();
+  }, [user, hasProfile]);
 
   // Show loading state
   if (authLoading || profileLoading) {
@@ -74,39 +120,72 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Dashboard Content - Placeholder */}
+      {/* Dashboard Content - Stats Cards */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {/* Stats Card 1 */}
+        {/* Stats Card 1 - Total Messages */}
         <div className="rounded-2xl border bg-card p-6 space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">
             Total Messages
           </h3>
-          <p className="text-3xl font-bold">0</p>
-          <p className="text-xs text-muted-foreground">
-            No messages yet
-          </p>
+          {isLoadingAnalytics ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <p className="text-2xl font-bold">Loading...</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-3xl font-bold">{analytics?.totalMessages || 0}</p>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.totalMessages === 0
+                  ? "No messages yet"
+                  : `${analytics?.messagesThisWeek || 0} this week`}
+              </p>
+            </>
+          )}
         </div>
 
-        {/* Stats Card 2 */}
+        {/* Stats Card 2 - Unread Messages */}
         <div className="rounded-2xl border bg-card p-6 space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">
             Unread Messages
           </h3>
-          <p className="text-3xl font-bold">0</p>
-          <p className="text-xs text-muted-foreground">
-            All caught up!
-          </p>
+          {isLoadingAnalytics ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <p className="text-2xl font-bold">Loading...</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-3xl font-bold">{profile?.message_count || 0}</p>
+              <p className="text-xs text-muted-foreground">
+                {profile?.message_count === 0
+                  ? "All caught up!"
+                  : "Pending messages"}
+              </p>
+            </>
+          )}
         </div>
 
-        {/* Stats Card 3 */}
+        {/* Stats Card 3 - Profile Views */}
         <div className="rounded-2xl border bg-card p-6 space-y-2">
           <h3 className="text-sm font-medium text-muted-foreground">
             Profile Views
           </h3>
-          <p className="text-3xl font-bold">0</p>
-          <p className="text-xs text-muted-foreground">
-            Start sharing your link
-          </p>
+          {isLoadingAnalytics ? (
+            <div className="flex items-center gap-2">
+              <Loader2 className="w-6 h-6 animate-spin text-purple-500" />
+              <p className="text-2xl font-bold">Loading...</p>
+            </div>
+          ) : (
+            <>
+              <p className="text-3xl font-bold">{analytics?.totalVisits || 0}</p>
+              <p className="text-xs text-muted-foreground">
+                {analytics?.totalVisits === 0
+                  ? "Start sharing your link"
+                  : `${analytics?.visitsThisWeek || 0} this week`}
+              </p>
+            </>
+          )}
         </div>
       </div>
 
@@ -116,8 +195,8 @@ export default function DashboardPage() {
         <p className="text-muted-foreground">
           Share this link to receive anonymous messages
         </p>
-        <div className="flex items-center gap-2">
-          <code className="flex-1 rounded-lg bg-background/50 px-4 py-2 text-sm">
+        <div className="flex items-center flex-col md:flex-row gap-2 ">
+          <code className="flex-1 rounded-lg bg-background/50 px-4 py-2 text-sm overflow-x-auto">
             {typeof window !== "undefined"
               ? `${window.location.origin}/${profile?.username}`
               : `/${profile?.username}`}
@@ -128,10 +207,10 @@ export default function DashboardPage() {
                 navigator.clipboard.writeText(
                   `${window.location.origin}/${profile.username}`
                 );
-                // TODO: Add toast notification
+                toast.success("Link copied to clipboard!");
               }
             }}
-            className="px-4 py-2 rounded-lg bg-purple-600 hover:bg-purple-700 transition-colors"
+            className="px-4 py-2 rounded-lg w-full md:w-fit bg-purple-600 hover:bg-purple-700 transition-colors"
           >
             Copy
           </button>

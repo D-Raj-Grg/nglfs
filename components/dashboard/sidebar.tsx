@@ -175,7 +175,7 @@ export function DashboardSidebar() {
                   className={cn(
                     "w-12 h-12 rounded-full flex items-center justify-center transition-all duration-200",
                     isActive
-                      ? "bg-gradient-to-br from-purple-500 to-pink-500 text-white"
+                      ? "bg-linear-to-br from-purple-500 to-pink-500 text-white"
                       : "text-gray-400 hover:text-white hover:bg-gray-800/50"
                   )}
                   aria-label={item.name}

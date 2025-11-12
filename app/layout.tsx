@@ -5,6 +5,7 @@ import { AuthProvider } from "@/lib/auth/auth-context";
 import { ThemeProvider } from "@/components/theme-provider";
 import { SkipToContent } from "@/components/ui/skip-to-content";
 import { Toaster } from "sonner";
+import { ServiceWorkerRegister } from "@/components/notifications/service-worker-register";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -101,6 +102,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <SkipToContent />
+          <ServiceWorkerRegister />
           <AuthProvider>
             {children}
             <Toaster position="top-center" richColors />

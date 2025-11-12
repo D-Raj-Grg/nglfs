@@ -18,6 +18,7 @@ import { PasswordChangeForm } from "@/components/settings/password-change-form";
 import { AccountDeletion } from "@/components/settings/account-deletion";
 import { ThemeToggle } from "@/components/settings/theme-toggle";
 import { PrivacySettings } from "@/components/settings/privacy-settings";
+import { NotificationSettings } from "@/components/settings/notification-settings";
 import { useProfileStore } from "@/lib/stores/profile-store";
 import { validateUsername, sanitizeUsername } from "@/lib/validations/username";
 import { toast } from "sonner";
@@ -275,9 +276,10 @@ export default function ProfileSettingsPage() {
 
       {/* Settings Tabs */}
       <Tabs defaultValue="profile" className="w-full">
-        <TabsList className="grid w-full grid-cols-5 mb-6">
+        <TabsList className="grid w-full grid-cols-6 mb-6">
           <TabsTrigger value="profile">Profile</TabsTrigger>
           <TabsTrigger value="appearance">Appearance</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
           <TabsTrigger value="privacy">Privacy</TabsTrigger>
           <TabsTrigger value="security">Security</TabsTrigger>
           <TabsTrigger value="account">Account</TabsTrigger>
@@ -470,6 +472,13 @@ export default function ProfileSettingsPage() {
         <TabsContent value="appearance">
           <MagicCard className="p-8">
             <ThemeToggle />
+          </MagicCard>
+        </TabsContent>
+
+        {/* Notifications Tab */}
+        <TabsContent value="notifications">
+          <MagicCard className="p-8">
+            <NotificationSettings />
           </MagicCard>
         </TabsContent>
 
